@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+   <head>
+<!--      <meta charset="utf-8">-->
+<!--      <meta name="viewport" content="width=device-width, initial-scale=1">-->
+      <link href="{% static 'core/css/bootstrap.css' %}" rel="stylesheet" type="text/css" />
+   </head>
+   <body>
+      <div class="container">
+         <!-- Trigger the modal with a button -->
+         <p align="right">
+            <div class="d-grid gap-2">
+               <button type="button" class="btn btn-info"  data-toggle="modal" data-target="#myModal">Add Csv</button>
+            </div>
+         </p>
+         <!-- Modal -->
+         <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+               <!-- Modal content-->
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                     <h4 class="modal-title"></h4>
+                  </div>
+                  <div class="modal-body">
+                     <form method="post" enctype='multipart/form-data'>
+                           {% csrf_token %}
+                       <h2 >Upload your CSV File</h2>
+                        {{form.file}}
+                        <br>
+                        <br>
+                       <button class="btn btn-primary"
+                          type="submit">Upload
+                       </button>
+                     </form>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="container">
+         {% if message_type == 'success' %}
+            <p style="color: green;">{{message}}</p>
+         {%  else %}
+            <p style="color: red;">{{message}}</p>
+         {% endif %}
+         <div class="table-responsive">
+            <table class="table">
+               <thead>
+                  <tr>
+                     <th>Title</th>
+                     <th>Decription</th>
+                     <th>Image</th>
+                  </tr>
+               </thead>
+               <tbody id="table_body">
+               </tbody>
+            </table>
+         </div>
+      </div>
+      <script src="{% static 'core/js/jquery-3.6.0.min.js' %}"></script>
+      <script src="{% static 'core/js/bootstrap.min.js' %}"></script>
+      <script>
+      $(document).ready(function () {
+          $.ajax({
+                  type: 'GET',
+                  url: "{% url 'core:get-csv-file-data' %}",
+                  dataType: 'json',
+                  cache: false,
+                  success: function(response) {
+                      for(var i = 0; i < response.length; i++) {
+                          $('#table_body').append('<tr><td>' + response[i]['title'] + '</td><td>' + response[i]['description'] + '</td><td>' + response[i]['image'] + '</td></tr>');
+                        }
+                  }
+              });
+          });
+   </script>
+   </body>
+
+</html>
